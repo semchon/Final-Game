@@ -1,5 +1,6 @@
+import pygame
 from scenes import draw_start, draw_background
-from assets.game_parameters import *
+from game_parameters import *
 
 
 #init pygame and basics
