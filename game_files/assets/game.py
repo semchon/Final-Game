@@ -56,9 +56,6 @@ while home_running:
                 pygame.mixer.Sound.play(start_clap)
             else:
                 pygame.mixer.Sound.play(clap)
-        if event.type == pygame.MOUSEBUTTONUP:
-            background.blit(crowd12_srt, (100, 400))
-
 
     surf.blit(background, (0, 0))
     if SCREEN_WIDTH / 2 - 125 <= mouse[0] <= SCREEN_WIDTH / 2 + 125 and SCREEN_HEIGHT / 2 + 150 <= mouse[1] <= SCREEN_HEIGHT / 2 + 210:
@@ -98,20 +95,31 @@ screen.blit(left_hand, (int(SCREEN_WIDTH / 4.5), int(SCREEN_HEIGHT / 2.2)))
 screen.blit(right_hand, (int(2.1*SCREEN_WIDTH / 4.5), int(SCREEN_HEIGHT / 4)))
 score = 0
 crowd = Crowd(0,0)
+
+bottom_mask_large = pygame.image.load("images/crowd_sprites/coverup.png")
+bottom_mask = pygame.transform.scale(bottom_mask_large, (1279,255))
 while game_running:
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                crowd.crowd_clap(10)
                 score += 1
                 draw_background(screen)
+                for k in range(4):
+                    for i in range(15):
+                        crowd.draw_crowd(screen, i * 137 + 69 * k - 400, k * 40 + 50)
+                        screen.blit(bottom_mask, (0, 570))
                 screen.blit(both_hands, (int(SCREEN_WIDTH / 2.3), int(SCREEN_HEIGHT / 2.4)))
                 pygame.mixer.Sound.play(clap)
                 print(score)
         if event.type == pygame.KEYUP:
             draw_background(screen)
+            for k in range(4):
+                for i in range(15):
+                    crowd.draw_crowd(screen, i * 137 + 69 * k - 400, k * 40 + 50)
+                    screen.blit(bottom_mask, (0, 570))
             screen.blit(left_hand, (int(SCREEN_WIDTH / 4.5), int(SCREEN_HEIGHT / 2.2)))
             screen.blit(right_hand, (int(2.1 * SCREEN_WIDTH / 4.5), int(SCREEN_HEIGHT / 4)))
         text = font_button.render(f"Score: {score}", True, (255, 29, 0))
