@@ -1,13 +1,12 @@
 import pygame
 from scenes import draw_start, draw_background
 from game_parameters import *
-
+from crowd import Crowd, crowd
 
 #init pygame and basics
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Social Credit: The Game")
-clock = pygame.time.Clock()
 
 
 #Main Loop for Home Screen
@@ -28,15 +27,18 @@ quit_button_txt = font_button.render("QUIT", True, (0, 0, 0))
 srt_button_txt = font_button.render("START", True, (0, 0, 0))
 quit_button_txt_2 = font_button.render("QUIT", True, (255, 255, 255))
 srt_button_txt_2 = font_button.render("START", True, (255, 255, 255))
-
+crowd1_srt = pygame.image.load("images/crowd_sprites/crowd1_2.png").convert()
+crowd12_srt = pygame.image.load("images/crowd_sprites/crowd1_3.png").convert()
+crowd2_srt = pygame.image.load("images/crowd_sprites/crowd5_2.png").convert()
+crowd22_srt = pygame.image.load("images/crowd_sprites/crowd5_3.png").convert()
 clap = pygame.mixer.Sound("sounds/the_clap.wav")
 start_clap = pygame.mixer.Sound("sounds/start_clap.wav")
 pygame.mixer.music.load("sounds/start_music.wav")
 pygame.mixer.music.set_volume(0.5)
 pygame.mixer.music.play(loops = 100)
+
 while home_running:
     surf = screen
-
     mouse = pygame.mouse.get_pos()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -54,6 +56,9 @@ while home_running:
                 pygame.mixer.Sound.play(start_clap)
             else:
                 pygame.mixer.Sound.play(clap)
+        if event.type == pygame.MOUSEBUTTONUP:
+            background.blit(crowd12_srt, (100, 400))
+
 
     surf.blit(background, (0, 0))
     if SCREEN_WIDTH / 2 - 125 <= mouse[0] <= SCREEN_WIDTH / 2 + 125 and SCREEN_HEIGHT / 2 + 150 <= mouse[1] <= SCREEN_HEIGHT / 2 + 210:
@@ -92,13 +97,14 @@ draw_background(screen)
 screen.blit(left_hand, (int(SCREEN_WIDTH / 4.5), int(SCREEN_HEIGHT / 2.2)))
 screen.blit(right_hand, (int(2.1*SCREEN_WIDTH / 4.5), int(SCREEN_HEIGHT / 4)))
 score = 0
+crowd = Crowd(0,0)
 while game_running:
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
+                crowd.crowd_clap(10)
                 score += 1
                 draw_background(screen)
                 screen.blit(both_hands, (int(SCREEN_WIDTH / 2.3), int(SCREEN_HEIGHT / 2.4)))
