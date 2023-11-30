@@ -70,3 +70,17 @@ def draw_background(surf):
     for x in range(0, SCREEN_WIDTH, TILE_SIZE):
         for y in range(0, int(SCREEN_HEIGHT/3)):
             surf.blit(floor, (x, y))
+
+def semi_draw_background(surf):
+    walls = pygame.image.load("images/bg_tile_up.png").convert()
+    floor = pygame.image.load("images/bg_tile.png").convert()
+
+    #make PNGs transparent
+    walls.set_colorkey((0,0,0))
+    floor.set_colorkey((0, 0, 0))
+
+
+    for x in range(0, SCREEN_WIDTH, TILE_SIZE):
+        for y in range(0, int(SCREEN_HEIGHT/6), TILE_SIZE):
+            surf.blit(floor, (x,y))
+

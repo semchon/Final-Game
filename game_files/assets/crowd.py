@@ -11,7 +11,7 @@ class Crowd(pygame.sprite.Sprite):
         image2_big = pygame.image.load(f"images/crowd_sprites/crowd1_2.png")
         image3_big = pygame.image.load(f"images/crowd_sprites/crowd1_3.png")
         self.image1 = pygame.transform.scale(image1_big, (400,400))
-        self.image2 = pygame.transform.scale(image2_big, (230, 230))
+        self.image2 = pygame.transform.scale(image2_big, (400, 400))
         self.image3 = pygame.transform.scale(image3_big, (230, 230))
         self.image1.set_colorkey((255,255,255))
         self.image2.set_colorkey((255,255,255))
@@ -25,7 +25,12 @@ class Crowd(pygame.sprite.Sprite):
         self.time_bookmark = pygame.time.get_ticks()
 
     def draw_crowd(self, surf,x,y):
-            surf.blit(self.image, (x,y))
+        self.image = self.image2
+        surf.blit(self.image, (x,y))
+
+    def draw_crowd_clapping(self, surf,x,y):
+        self.image = self.image1
+        surf.blit(self.image, (x,y))
 
 
     def crowd_clap(self,surf,permutations):
