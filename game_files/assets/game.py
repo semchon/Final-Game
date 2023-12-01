@@ -2,6 +2,8 @@ import pygame
 from scenes import draw_start, draw_background, semi_draw_background
 from game_parameters import *
 from crowd import Crowd, crowd
+import random
+import os
 
 #init pygame and basics
 pygame.init()
@@ -104,15 +106,13 @@ crowd = Crowd(0,0)
 
 bottom_mask_large = pygame.image.load("images/crowd_sprites/coverup.png")
 bottom_mask = pygame.transform.scale(bottom_mask_large, (1279,255))
-for k in range(4):
-    for i in range(15):
-        crowd.draw_crowd(screen, i * 137 + 69 * k - 400, k * 40 + 50)
-screen.blit(bottom_mask, (-1, 570))
 game_tick_bookmark =clock.get_time()
 current_time = 0
-pygame.mixer.music.load("sounds/crowd_clap.wav")
-pygame.mixer.music.set_volume(1)
-pygame.mixer.music.play()
+hand_state = left_hand
+hand_state2 = right_hand
+hand_state1_rect = (int(SCREEN_WIDTH / 2.3), int(SCREEN_HEIGHT / 2.4))
+hand_state2_rect = (int(SCREEN_WIDTH / 2.3), int(SCREEN_HEIGHT / 2.4))
+crowdstate = False
 
 while game_running:
     clock.tick(1000)
@@ -120,15 +120,27 @@ while game_running:
     current_time += game_current_tick
     time_left = int(60-(current_time/1000))
     time_txt= font_button.render(f"Time Left: {time_left}", True, (255, 29, 0))
-
-
-    if 55<time_left<57 or 50<time_left<53 or 44<time_left<49 or 41<time_left<42 or 36<time_left<39 or 30<time_left<32 or 25<time_left<28 or 20<time_left<22 or 14<time_left<19 or 10<time_left<11 or 7<time_left<9 or 4<time_left<6 or time_left<2:
-        draw_background(screen)
+    draw_background(screen)
+    screen.blit(time_txt, (20, SCREEN_HEIGHT / 2 - 280))
+    text = font_button.render(f"Score: {score}", True, (255, 29, 0))
+    screen.blit(text, (20, SCREEN_HEIGHT / 2 - 320))
+    if crowdstate == False:
+        for k in range(4):
+            for i in range(15):
+                crowd.draw_crowd(screen, i * 137 + 69 * k - 400, k * 40 + 50)
+    elif crowdstate == True:
         for k in range(4):
             for i in range(15):
                 crowd.draw_crowd_clapping(screen, i * 137 + 69 * k - 400, k * 40 + 50)
-                screen.blit(bottom_mask, (0, 570))
-        pygame.mixer.music.load("sounds/crowd_clap.wav")
+    screen.blit(bottom_mask,(-1,555))
+
+    screen.blit(hand_state, hand_state1_rect)
+    screen.blit(hand_state2, hand_state2_rect)
+
+    if 55<time_left<57 or 50<time_left<53 or 44<time_left<49 or 41<time_left<42 or 36<time_left<39 or 30<time_left<32 or 25<time_left<28 or 20<time_left<22 or 14<time_left<19 or 10<time_left<11 or 7<time_left<9 or 4<time_left<6 or time_left<2:
+        crowdstate=True
+        random_clap = random.choice(os.listdir("sounds/applauses"))
+        pygame.mixer.music.load(f"sounds/applauses/{random_clap}")
         pygame.mixer.music.set_volume(1)
         pygame.mixer.music.play()
         for event in pygame.event.get():
@@ -136,65 +148,41 @@ while game_running:
                 pygame.quit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    score += 1
-                    draw_background(screen)
-                    for k in range(4):
-                        for i in range(15):
-                            crowd.draw_crowd_clapping(screen, i * 137 + 69 * k - 400, k * 40 + 50)
-                            screen.blit(bottom_mask, (-1, 570))
-                    screen.blit(both_hands, (int(SCREEN_WIDTH / 2.3), int(SCREEN_HEIGHT / 2.4)))
-                    screen.blit(time_txt, (20, SCREEN_HEIGHT / 2 - 280))
                     pygame.mixer.Sound.play(clap)
-                    print(score)
-            if event.type == pygame.KEYUP:
-                draw_background(screen)
-                for k in range(4):
-                    for i in range(15):
-                        crowd.draw_crowd_clapping(screen, i * 137 + 69 * k - 400, k * 40 + 50)
-                        screen.blit(bottom_mask, (0, 570))
-                screen.blit(left_hand, (int(SCREEN_WIDTH / 4.5), int(SCREEN_HEIGHT / 2.2)))
-                screen.blit(right_hand, (int(2.1 * SCREEN_WIDTH / 4.5), int(SCREEN_HEIGHT / 4)))
-                screen.blit(time_txt, (20, SCREEN_HEIGHT / 2 - 280))
-            semi_draw_background(screen)
-            screen.blit(time_txt, (20, SCREEN_HEIGHT / 2 - 280))
-            text = font_button.render(f"Score: {score}", True, (255, 29, 0))
-            screen.blit(text, (20, SCREEN_HEIGHT / 2 - 320))
+                    score += 1
+                    hand_state = both_hands
+                    hand_state2 = both_hands
+                    hand_state1_rect = (int(SCREEN_WIDTH / 2.3), int(SCREEN_HEIGHT / 2.4))
+                    hand_state2_rect = (int(SCREEN_WIDTH / 2.3), int(SCREEN_HEIGHT / 2.4))
 
+            if event.type == pygame.KEYUP:
+                hand_state=left_hand
+                hand_state2= right_hand
+                hand_state1_rect = (int(SCREEN_WIDTH / 4.5), int(SCREEN_HEIGHT / 2.2))
+                hand_state2_rect = (int(2.1 * SCREEN_WIDTH / 4.5), int(SCREEN_HEIGHT / 4))
 
     else:
-        draw_background(screen)
-        for k in range(4):
-            for i in range(15):
-                crowd.draw_crowd(screen, i * 137 + 69 * k - 400, k * 40 + 50)
-                screen.blit(bottom_mask, (0, 570))
+        crowdstate = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    score -= 1
-                    draw_background(screen)
-                    for k in range(4):
-                        for i in range(15):
-                            crowd.draw_crowd(screen, i * 137 + 69 * k - 400, k * 40 + 50)
-                            screen.blit(bottom_mask, (-1, 570))
-                    screen.blit(both_hands, (int(SCREEN_WIDTH / 2.3), int(SCREEN_HEIGHT / 2.4)))
-                    screen.blit(time_txt, (20, SCREEN_HEIGHT / 2 - 280))
                     pygame.mixer.Sound.play(clap)
-                    print(score)
+                    score -= 1
+                    hand_state = both_hands
+                    hand_state2 = both_hands
+                    hand_state1_rect = (int(SCREEN_WIDTH / 2.3), int(SCREEN_HEIGHT / 2.4))
+                    hand_state2_rect = (int(SCREEN_WIDTH / 2.3), int(SCREEN_HEIGHT / 2.4))
+
+
             if event.type == pygame.KEYUP:
-                draw_background(screen)
-                for k in range(4):
-                    for i in range(15):
-                        crowd.draw_crowd(screen, i * 137 + 69 * k - 400, k * 40 + 50)
-                        screen.blit(bottom_mask, (0, 570))
-                screen.blit(left_hand, (int(SCREEN_WIDTH / 4.5), int(SCREEN_HEIGHT / 2.2)))
-                screen.blit(right_hand, (int(2.1 * SCREEN_WIDTH / 4.5), int(SCREEN_HEIGHT / 4)))
-                screen.blit(time_txt, (20, SCREEN_HEIGHT / 2 - 280))
-            semi_draw_background(screen)
-            screen.blit(time_txt, (20, SCREEN_HEIGHT / 2 - 280))
-            text = font_button.render(f"Score: {score}", True, (255, 29, 0))
-            screen.blit(text, (20, SCREEN_HEIGHT / 2 - 320))
+                hand_state = left_hand
+                hand_state2 = right_hand
+                hand_state1_rect = (int(SCREEN_WIDTH / 4.5), int(SCREEN_HEIGHT / 2.2))
+                hand_state2_rect = (int(2.1 * SCREEN_WIDTH / 4.5), int(SCREEN_HEIGHT / 4))
+
+
     if time_left == 0:
         game_running = False
         quit_screen = True
