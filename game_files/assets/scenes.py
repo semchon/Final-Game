@@ -12,6 +12,11 @@ def draw_start(surf):
     main_txt_2 = font1_sub.render("Made by Sam Chon", True, (255, 29, 0))
     surf.blit(main_txt_1, (SCREEN_WIDTH/2-main_txt_1.get_width()/2, SCREEN_HEIGHT/2-300))
     surf.blit(main_txt_2, (SCREEN_WIDTH/2-main_txt_2.get_width()/2, SCREEN_HEIGHT/2-220))
+    with open('highscore.txt', 'r') as score_file:
+        e = score_file.readlines()
+        highscore = int(e[0])
+    highscore_txt = font1_sub.render(f"Highscore: {highscore}", True, (255, 29, 0))
+    surf.blit(highscore_txt, (SCREEN_WIDTH / 2 - highscore_txt.get_width() / 2, SCREEN_HEIGHT / 2 - 160))
 
 def home_draw(surf,backing):
     font_button = pygame.font.Font("fonts\main_font.ttf", size=40)

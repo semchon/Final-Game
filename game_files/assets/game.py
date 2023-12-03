@@ -17,14 +17,17 @@ home_running = True
 instructions_running = False
 y = 0
 game_running = False
+quit_screen = False
 background = screen.copy()
 draw_start(background)
 left_hand = pygame.image.load("images/hands/clap_left.png").convert()
 right_hand = pygame.image.load("images/hands/clap_right.png").convert()
 both_hands = pygame.image.load("images/hands/clap_together.png").convert()
+both_hands_bad = pygame.image.load("images/hands/clap_together_bad.png").convert()
 right_hand.set_colorkey((255, 255, 255))
 left_hand.set_colorkey((255, 255, 255))
 both_hands.set_colorkey((255, 255, 255))
+both_hands_bad.set_colorkey((255, 255, 255))
 font_button = pygame.font.Font("fonts\main_font.ttf", size=40)
 quit_button_txt = font_button.render("QUIT", True, (0, 0, 0))
 srt_button_txt = font_button.render("START", True, (0, 0, 0))
@@ -112,7 +115,7 @@ hand_state = left_hand
 hand_state2 = right_hand
 hand_state1_rect = (int(SCREEN_WIDTH / 2.3), int(SCREEN_HEIGHT / 2.4))
 hand_state2_rect = (int(SCREEN_WIDTH / 2.3), int(SCREEN_HEIGHT / 2.4))
-crowdstate = False
+crowdstate = True
 
 while game_running:
     clock.tick(1000)
@@ -135,9 +138,10 @@ while game_running:
     screen.blit(bottom_mask,(-1,555))
 
     screen.blit(hand_state, hand_state1_rect)
+
     screen.blit(hand_state2, hand_state2_rect)
 
-    if 55<time_left<57 or 50<time_left<53 or 44<time_left<49 or 41<time_left<42 or 36<time_left<39 or 30<time_left<32 or 25<time_left<28 or 20<time_left<22 or 14<time_left<19 or 10<time_left<11 or 7<time_left<9 or 4<time_left<6 or time_left<2:
+    if 55<time_left<57 or 51<time_left<53 or 44<time_left<46 or 41<time_left<42 or 37<time_left<39 or 30<time_left<32 or 25<time_left<27 or 20<time_left<22 or 16<time_left<19 or 10<time_left<12 or 7<time_left<9 or 4<time_left<6 or time_left<2:
         crowdstate=True
         random_clap = random.choice(os.listdir("sounds/applauses"))
         pygame.mixer.music.load(f"sounds/applauses/{random_clap}")
@@ -149,9 +153,12 @@ while game_running:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     pygame.mixer.Sound.play(clap)
-                    score += 1
-                    hand_state = both_hands
-                    hand_state2 = both_hands
+                    random_shush = random.choice(os.listdir("sounds/shushes"))
+                    shush = pygame.mixer.Sound(f"sounds/shushes/{random_shush}")
+                    pygame.mixer.Sound.play(shush)
+                    score -= 1
+                    hand_state = both_hands_bad
+                    hand_state2 = both_hands_bad
                     hand_state1_rect = (int(SCREEN_WIDTH / 2.3), int(SCREEN_HEIGHT / 2.4))
                     hand_state2_rect = (int(SCREEN_WIDTH / 2.3), int(SCREEN_HEIGHT / 2.4))
 
@@ -169,7 +176,7 @@ while game_running:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     pygame.mixer.Sound.play(clap)
-                    score -= 1
+                    score += 1
                     hand_state = both_hands
                     hand_state2 = both_hands
                     hand_state1_rect = (int(SCREEN_WIDTH / 2.3), int(SCREEN_HEIGHT / 2.4))
@@ -188,7 +195,31 @@ while game_running:
         quit_screen = True
     pygame.display.flip()
 
+pygame.mixer.music.pause()
+with open('highscore.txt','r') as score_file:
+    e = score_file.readlines()
+    highscore = int(e[0])
+    print(score)
+    if score > highscore:
+        with open('highscore.txt','w') as sco_file:
+            sco_file.write(f"{score}")
+            highscore = score
 
+while quit_screen:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+        else:
+            pygame.display.flip()
+            for x in range(0, SCREEN_WIDTH, TILE_SIZE):
+                for y in range(0, SCREEN_HEIGHT, TILE_SIZE):
+                    screen.blit(pygame.image.load("images/bg_tile_up.png").convert(), (x, y))
+            font1 = pygame.font.Font("fonts\main_font.ttf", size=80)
+            game_over = font1.render("GAME OVER", True, (255, 29, 0))
+            final_score = font1.render(f"Score-{score}", True, (255, 29, 0))
+            screen.blit(game_over, (SCREEN_WIDTH/2-game_over.get_width()/2, SCREEN_HEIGHT/2-300))
+            screen.blit(final_score, (SCREEN_WIDTH/2-final_score.get_width()/2, SCREEN_HEIGHT/2-230))
+            clock.tick(10)
 
 
 pygame.quit()
